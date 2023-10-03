@@ -16,12 +16,19 @@ class YTHomeScreen extends StatefulWidget {
 
 class _YTHomeScreenState extends State<YTHomeScreen> {
   TextEditingController searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    searchController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: ColorPicker.colorScheme2,
-      appBar: ytAppBar,
+      appBar: ytAppBar(false),
       body: Align(
         alignment: Alignment.center,
         child: Container(
@@ -67,8 +74,9 @@ class _YTHomeScreenState extends State<YTHomeScreen> {
                             context
                                 .read<YtVideoBloc>()
                                 .add(YtVideoLoadedEvent(youtubeId));
-                            Navigator.of(context)
-                                .pushNamed(RouteConstant.video, arguments: youtubeId);
+                            Navigator.of(context).pushNamed(RouteConstant.video,
+                                arguments: youtubeId);
+                            searchController.text = "";
                           },
                         )),
                       ],

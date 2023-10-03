@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../utils/colors.dart';
 
-PreferredSizeWidget ytAppBar = AppBar(
+PreferredSizeWidget ytAppBar(bool leading) => AppBar(
       backgroundColor: ColorPicker.colorScheme1,
-      automaticallyImplyLeading: false,
+      automaticallyImplyLeading: leading,
       title: const Text(
         'YT Downloader',
         style: TextStyle(
