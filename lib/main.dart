@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         title: 'Flutter Demo',
         theme: ThemeData.dark(),
         onGenerateRoute: RouteGenerator.onGenerateRoute,
-        initialRoute: RouteConstant.home,
+        initialRoute: RouteConstant.download,
         debugShowCheckedModeBanner: false,
       ),
     );

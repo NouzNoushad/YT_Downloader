@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:yt_downloader/presentation/yt_downloads.dart/layout/yt_downloads.dart';
 import 'package:yt_downloader/presentation/yt_home/layout/yt_home.dart';
 import 'package:yt_downloader/presentation/yt_video_player/layout/yt_video_player.dart';
 import 'package:yt_downloader/routes/route_constant.dart';
@@ -15,8 +16,12 @@ class RouteGenerator {
         return MaterialPageRoute(
             settings: const RouteSettings(name: RouteConstant.video),
             builder: (context) => YtVideoPlayerScreen(
-              youtubeId: settings.arguments as String,
-            ));
+                  youtubeId: settings.arguments as String,
+                ));
+      case RouteConstant.download:
+        return MaterialPageRoute(
+            settings: const RouteSettings(name: RouteConstant.download),
+            builder: (context) => const YtDownloadScreen());
       default:
         return MaterialPageRoute(
             builder: (context) => const Scaffold(

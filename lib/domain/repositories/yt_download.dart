@@ -28,18 +28,12 @@ class YtDownloadRepository extends YtDownloadModel {
       deleteOnError: true,
     ).then((_) {
       downloadStatus = DownloadStatus.success;
-      debugPrint('///////////////////////////// video Downloaded');
+      debugPrint('///////////////////////////// Downloaded');
+    }).onError((error, stackTrace) {
+      downloadStatus = DownloadStatus.error;
+      debugPrint('/////////////////////////// Download Error');
     });
-    // .onError((error, stackTrace) {
-    //   downloadStatus = DownloadStatus.error;
-    //   debugPrint('/////////////////////////// Download Error');
-    // });
   }
-
-  // Future<String> _getFilePath(String filename) async {
-  //   final dir = Directory('/storage/emulated/0/Download');
-  //   return "${dir.path}/$filename";
-  // }
 
   Future<String?> getDownloadPath(String filename) async {
     Directory? directory;
@@ -52,6 +46,7 @@ class YtDownloadRepository extends YtDownloadModel {
           directory = await getExternalStorageDirectory();
         }
       }
+      print('/////////////////// directory: $directory');
     } catch (err) {
       print("Cannot get download folder path");
     }

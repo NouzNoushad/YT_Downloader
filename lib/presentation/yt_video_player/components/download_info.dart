@@ -1,12 +1,9 @@
-import 'dart:io';
-
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:yt_downloader/data/bloc/download_bloc/download_bloc.dart';
 import 'package:yt_downloader/domain/models/yt_video_response.dart' as response;
 import 'package:yt_downloader/utils/extensions.dart';
 import '../../../utils/colors.dart';
-import '../../../utils/constant.dart';
 
 class DownloadInfo extends StatefulWidget {
   final response.Response videoResponse;
@@ -17,55 +14,6 @@ class DownloadInfo extends StatefulWidget {
 }
 
 class _DownloadInfoState extends State<DownloadInfo> {
-  double progress = 0;
-  late DownloadStatus downloadStatus;
-
-  Future<void> initializeDownload(String url, String fileName) async {
-    Dio dio = Dio();
-    final String date = DateTime.now().microsecondsSinceEpoch.toString();
-    String fileName = "$date.mp4";
-    String? path = await getDownloadPath(fileName);
-    debugPrint('///////////////////////////// url: $url, fileName: $fileName');
-    await dio.download(
-      url,
-      path,
-      onReceiveProgress: (receivedBytes, totalBytes) {
-        debugPrint('${receivedBytes / totalBytes}');
-        progress = receivedBytes / totalBytes;
-      },
-      deleteOnError: true,
-    ).then((_) {
-      downloadStatus = DownloadStatus.success;
-      debugPrint('///////////////////////////// video Downloaded');
-    });
-    // .onError((error, stackTrace) {
-    //   downloadStatus = DownloadStatus.error;
-    //   debugPrint('/////////////////////////// Download Error');
-    // });
-  }
-
-  // Future<String> _getFilePath(String filename) async {
-  //   final dir = Directory('/storage/emulated/0/Download');
-  //   return "${dir.path}/$filename";
-  // }
-
-  Future<String?> getDownloadPath(String filename) async {
-    Directory? directory;
-    try {
-      if (Platform.isIOS) {
-        directory = await getApplicationDocumentsDirectory();
-      } else {
-        // directory = Directory('/storage/emulated/0/Download');
-        // if (!await directory.exists()) {
-          directory = await getExternalStorageDirectory();
-        // }
-      }
-    } catch (err) {
-      print("Cannot get download folder path");
-    }
-    return "${directory?.path}/$filename";
-  }
-
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -146,7 +94,10 @@ class _DownloadInfoState extends State<DownloadInfo> {
                                 String url = video!.url ?? "";
                                 String fileName =
                                     "${widget.videoResponse.title}_${index + 1}";
-                                initializeDownload(url, fileName);
+                                // initializeDownload(url, fileName);
+                                context
+                                    .read<DownloadBloc>()
+                                    .add(DownloadLoadedEvent(url, fileName));
                               }
                             : () {});
                   }),
@@ -158,12 +109,24 @@ class _DownloadInfoState extends State<DownloadInfo> {
                   ...List.generate(widget.videoResponse.audios?.length ?? 0,
                       (index) {
                     var audio = widget.videoResponse.audios?[index];
+                    int selectedIndex = 0;
                     int length =
                         int.parse(audio?.contentLength?.toString() ?? '0');
                     return downloadList(
                         audio?.quality?.split("_").last.toCamelCase() ?? "",
                         length.toMB(),
-                        () {});
+                        selectedIndex == index
+                            ? () {
+                                selectedIndex = index;
+                                String url = audio!.url ?? "";
+                                String fileName =
+                                    "${widget.videoResponse.title}_${index + 1}";
+                                // initializeDownload(url, fileName);
+                                context
+                                    .read<DownloadBloc>()
+                                    .add(DownloadLoadedEvent(url, fileName));
+                              }
+                            : () {});
                   }),
                 ],
               ),
